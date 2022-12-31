@@ -12,6 +12,10 @@ pub mod ඞ;
 #[path = "nrf52840.rs"]
 pub mod ඞ;
 
+#[cfg(feature = "mcu-stm32f0")]
+#[path = "stm32f0.rs"]
+pub mod ඞ;
+
 /// Holds the peripherals. This merely exists to allow a way to pass around platform
 /// specific peripherals, some of which may not even exist, in a platform-agnostic way.
 pub struct Peripherals<I2c = (), Delay = (), Uart = (), UsbDriver = ()> {

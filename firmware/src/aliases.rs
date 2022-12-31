@@ -44,6 +44,27 @@ pub mod ඞ {
 	pub type BbqPeripheralConcrete<'a> = ();
 }
 
+#[cfg(feature = "mcu-stm32f0")]
+pub mod ඞ {
+	pub use embassy_time::Delay as DelayConcrete;
+
+	pub type I2cConcrete<'a> =
+		embassy_stm32::i2c::I2c<'a, embassy_stm32::peripherals::I2C1>;
+
+	pub type UartConcrete<'a> =
+		embassy_stm32::usart::Uart<'a, embassy_stm32::peripherals::USART1>;
+
+	pub type UsbDriverConcrete<'a> =
+		embassy_stm32::usb::Driver<'a, embassy_stm32::peripherals::USB>;
+
+	#[cfg(all(bbq, feature = "log-usb-serial"))]
+	pub type BbqPeripheralConcrete<'a> = UsbDriverConcrete<'a>;
+	#[cfg(all(bbq, feature = "log-uart"))]
+	pub type BbqPeripheralConcrete<'a> = UartConcrete<'a>;
+	#[cfg(not(bbq))]
+	pub type BbqPeripheralConcrete<'a> = ();
+}
+
 pub trait I2c:
 	embedded_hal::blocking::i2c::Write<Error = <Self as I2c>::Error>
 	+ embedded_hal::blocking::i2c::WriteRead<Error = <Self as I2c>::Error>

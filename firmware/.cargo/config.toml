@@ -1,8 +1,9 @@
 [build]
 # We compile without atomics, because its faster than using atomic trap handler
-target = "riscv32imc-unknown-none-elf"
+# target = "riscv32imc-unknown-none-elf"
 # target = "thumbv7em-none-eabihf"
 # target = "xtensa-esp32-none-elf"
+target = "thumbv6m-none-eabi"
 
 [env]
 # You can override this via environment variable when building or by changing it here
@@ -50,6 +51,20 @@ rustflags = [
   "-C",
   "link-arg=-Tdefmt.x",
 ]
+[target.thumbv6m-none-eabi]
+rustflags = [
+  # TODO: Where is this from?
+  "-C",
+  "link-arg=--nmagic",
+  # For cortex-m-rt
+  "-C",
+  "link-arg=-Tlink.x",
+  # For defmt 
+  "-C",
+  "link-arg=-Tdefmt.x",
+]
+
+
 
 [unstable]
 build-std = ["core", "alloc"]

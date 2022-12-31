@@ -34,13 +34,13 @@ use defmt_rtt as _;
 pub fn setup() {
 	// Initialize the global allocator BEFORE you use it
 	{
-		const HEAP_SIZE: usize = 10 * 1024;
+		const HEAP_SIZE: usize = 2 * 1024;
 		static mut HEAP: [u8; HEAP_SIZE] = [0; HEAP_SIZE];
 
 		unsafe {
 			#[cfg(esp)]
 			ALLOCATOR.init(HEAP.as_mut_ptr(), HEAP_SIZE);
-			#[cfg(feature = "mcu-nrf52840")]
+			#[cfg(cortex_m)]
 			ALLOCATOR.init(HEAP.as_mut_ptr() as usize, HEAP_SIZE);
 		}
 	}

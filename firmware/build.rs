@@ -1,7 +1,7 @@
 use cfg_aliases::cfg_aliases;
 use feature_utils::mandatory_and_unique;
 
-mandatory_and_unique!("mcu-esp32", "mcu-esp32c3", "mcu-nrf52840");
+mandatory_and_unique!("mcu-esp32", "mcu-esp32c3", "mcu-nrf52840", "mcu-stm32f0");
 mandatory_and_unique!("imu-stubbed", "imu-mpu6050");
 mandatory_and_unique!("log-rtt", "log-usb-serial", "log-uart");
 
@@ -14,7 +14,7 @@ fn main() {
 			any(feature = "mcu-nrf52840"),
 			any(feature = "log-uart", feature = "log-usb-serial")
 		)},
-		cortex_m: { any(feature = "mcu-nrf52840") },
+		cortex_m: { any(feature = "mcu-nrf52840", feature = "mcu-stm32f0") },
 		riscv: { any(feature = "mcu-esp32c3") },
 	}
 
@@ -36,6 +36,19 @@ fn main() {
 		fs::write(
 			out.join("memory.x"),
 			include_bytes!("linker_scripts/memory.x.nrf52840"),
+		)
+		.unwrap();
+		// println!("cargo:rustc-link-arg=-Tmemory.x.nrf52840");
+		println!("cargo:rustc-link-search={}", out.display());
+	}
+
+	#[cfg(feature = "mcu-stm32f0")]
+	{
+		use std::{env, fs, path};
+		let out = path::PathBuf::from(env::var("OUT_DIR").unwrap());
+		fs::write(
+			out.join("memory.x"),
+			include_bytes!("linker_scripts/memory.x.stm32f0"),
 		)
 		.unwrap();
 		// println!("cargo:rustc-link-arg=-Tmemory.x.nrf52840");
