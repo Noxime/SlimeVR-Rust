@@ -52,16 +52,8 @@ pub async fn network_task(packets: &'static Packets) -> ! {
 	// Server will send broadcasts to this port
 	socket.bind(PORT).unwrap();
 
-	// Wait for a broadcast from the server to figure out server address
-	let mut host_ip = loop {
-		// Don't worry, server will send another Discover soon
-		let (_, addr, port) = recv_bytes(&mut socket, &mut []).await;
-
-		// If its on the correct port, its probably SlimeVR server :)
-		if port == PORT {
-			break addr;
-		}
-	};
+	// Host ip will be discovered when we receive packets, but start off with broadcasting
+	let mut host_ip = [255, 255, 255, 255];
 
 	// Sequence numbers are monotonically increasing. This is done to reject out-of-order packets
 	// This along with serialization should maybe be done in Packets
