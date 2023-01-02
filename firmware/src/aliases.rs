@@ -51,12 +51,14 @@ pub mod ඞ {
 pub trait I2c:
 	embedded_hal::blocking::i2c::Write<Error = <Self as I2c>::Error>
 	+ embedded_hal::blocking::i2c::WriteRead<Error = <Self as I2c>::Error>
+	+ embedded_hal::blocking::i2c::Read<Error = <Self as I2c>::Error>
 {
 	type Error: core::fmt::Debug;
 }
 impl<
 		T: embedded_hal::blocking::i2c::Write<Error = E>
-			+ embedded_hal::blocking::i2c::WriteRead<Error = E>,
+			+ embedded_hal::blocking::i2c::WriteRead<Error = E>
+			+ embedded_hal::blocking::i2c::Read<Error = E>,
 		E: core::fmt::Debug,
 	> I2c for T
 {

@@ -14,7 +14,7 @@ rust-version.workspace = true
 
 
 [features]
-default = ["mcu-esp32c3", "imu-stubbed", "log-rtt", "net-wifi"]
+default = ["mcu-esp32c3", "imu-mpu6050", "log-rtt", "net-wifi"]
 # default = ["mcu-nrf52840", "imu-stubbed", "log-usb-serial", "net-stubbed"]
 # default = ["mcu-esp32", "imu-stubbed", "log-uart", "net-wifi"]
 
@@ -48,7 +48,7 @@ net-stubbed = []                           # Stubs out network
 
 # Supported IMUs
 imu-bmi160 = ["dep:bmi160"]
-imu-mpu6050 = ["dep:mpu6050-dmp"]
+imu-mpu6050 = ["dep:mpu9250"]
 imu-stubbed = []                  # Stubs out the IMU
 
 # Supported defmt loggers
@@ -157,7 +157,7 @@ panic_defmt = { path = "crates/panic_defmt" }
 defmt-bbq = { version = "0.1", optional = true }
 
 # Peripheral drivers
-mpu6050-dmp = { version = "0.2", optional = true }
+mpu9250 = { version = "0.24", optional = true, features = ["i2c"] }
 bmi160 = { version = "0.1", optional = true }
 
 # Other crates
@@ -171,6 +171,7 @@ fugit = "0.3"
 firmware_protocol = { path = "../networking/firmware_protocol", features = [
   "nalgebra031",
 ] }
+dcmimu = "0.2"
 
 [build-dependencies]
 feature_utils = "0.0.0"
@@ -178,8 +179,7 @@ cfg_aliases = "0.1.1"
 
 
 [patch.crates-io]
-# Enable non-default I2C addresses and InitError
-mpu6050-dmp = { git = "https://github.com/TheButlah/mpu6050-dmp-rs", rev = "77128a75a51547baadc0f0ef99aba4432e848f10" }
+mpu9250 = { git = "https://github.com/Noxime/mpu9250", rev = "732c92b" }
 bmi160 = { git = "https://github.com/TheButlah/bmi160-rs", rev = "e99802b" }
 
 # Emable use of `atomic-polyfill`
@@ -199,7 +199,6 @@ embassy-sync = { git = "https://github.com/embassy-rs/embassy", rev = "ebc7350" 
 [profile.dev]
 # lto doesnt work on esp32 (xtensa)
 lto = false
-# opt-level = "s"
 
 # Necessary for esp-wifi to not be bugged
 # https://github.com/esp-rs/esp-wifi/blob/9b644387a54a5ace93d4280f29075ad2a9e9a8ed/README.md#important

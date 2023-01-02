@@ -58,6 +58,7 @@ fn main() -> ! {
 	EXECUTOR.init(Executor::new()).run(move |s| {
 		s.spawn(crate::networking::network_task(packets)).unwrap();
 		s.spawn(crate::networking::protocol_task(packets)).unwrap();
+		s.spawn(crate::networking::heartbeat_task(packets)).unwrap();
 		s.spawn(crate::imu::imu_task(packets, p.i2c, p.delay))
 			.unwrap();
 		#[cfg(bbq)]

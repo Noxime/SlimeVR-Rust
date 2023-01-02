@@ -1,6 +1,8 @@
 use defmt::debug;
 use embassy_executor::task;
+use embassy_time::{Ticker, Duration};
 use firmware_protocol::{BoardType, CbPacket, ImuType, McuType, SbPacket};
+use futures_util::StreamExt;
 
 #[cfg(feature = "net-wifi")]
 pub mod wifi;
@@ -22,6 +24,16 @@ pub async fn stubbed_network_task(packets: &'static Packets) -> ! {
 		// Dump network messages
 		let _ = packets.serverbound.recv().await;
 		defmt::trace!("pretending to do networking..");
+	}
+}
+
+#[task]
+pub async fn heartbeat_task(packets: &'static Packets) -> ! {
+	let mut ticker = Ticker::every(Duration::from_millis(500));
+
+	loop {
+		ticker.next().await;
+		packets.serverbound.send(SbPacket::Heartbeat).await;
 	}
 }
 
